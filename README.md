@@ -1,5 +1,7 @@
 # Reunion
 
+[![Build Status](https://travis-ci.org/hf/reunion.svg)](https://travis-ci.org/hf/reunion)
+
 Reunion (of Broken Parts), the Arabic translation of which is "al-jabr" or
 more commonly known as algebra, is a small library in Scala which implements
 generic algebraic algorithms.
