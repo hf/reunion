@@ -9,6 +9,24 @@ generic algebraic algorithms.
 It is originally designed to support simple work with congruences, fields,
 rings and the like.
 
+## Use It
+
+Published on Sonatype:
+
+```xml
+<dependency>
+  <groupId>me.stojan</groupId>
+  <artifactId>reunion_2.11</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
+... or in SBT:
+
+```scala
+libraryDependencies += "me.stojan" %% "reunion" % "0.0.1-SNAPSHOT"
+```
+
 ## License
 
 Copyright &copy; 2015 Stojan Dimitrovski
