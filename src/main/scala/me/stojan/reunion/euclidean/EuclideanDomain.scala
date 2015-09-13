@@ -1,5 +1,7 @@
 package me.stojan.reunion.euclidean
 
+import me.stojan.reunion.structure.Ring
+
 /**
  * A generic Euclidean domain element.
  */
@@ -41,4 +43,19 @@ trait Euclidean[V] {
    * Whether this element is not the zero element.
    */
   def nonZero: Boolean = !isZero
+}
+
+/**
+ * Holds implicits for convering `Euclidean`s to `Ring`s.
+ */
+object EuclideanConversions {
+  private case class RingEuclidean[V](euclidean: Euclidean[V]) extends Ring[V] {
+    override def value: V = euclidean.value
+    override def unary_-(): Ring[V] = -euclidean
+    override def +(r: Ring[V]): Ring[V] = euclidean + r
+    override def -(r: Ring[V]): Ring[V] = euclidean - r
+    override def *(r: Ring[V]): Ring[V] = euclidean * r
+  }
+
+  implicit def euclideanToRing[V](e: Euclidean[V]): Ring[V] = RingEuclidean[V](e)
 }
