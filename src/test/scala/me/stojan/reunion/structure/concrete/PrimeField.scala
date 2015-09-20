@@ -11,6 +11,10 @@ class PrimeFieldSpec extends ReunionSpec {
     (a + b) should be (PrimeField(11, 0))
   }
 
+  it should "assign PF(11, 12) to be PF(11, 1)" in {
+    PrimeField(11, 12) should be (PrimeField(11, 1))
+  }
+
   it should "calculate 1 * 1 == 1 in GF(11)" in {
     val a = PrimeField(11, 1)
 
@@ -62,5 +66,19 @@ class PrimeFieldSpec extends ReunionSpec {
     val a = PrimeField(11, 3)
 
     (-a) should be (PrimeField(11, 8))
+  }
+
+  it should "assert that 0 < 1 in GF(11)" in {
+    val a = PrimeField(11, 0)
+    val b = PrimeField(11, 1)
+
+    (a < b) should be (true)
+  }
+
+  it should "assert that 1 > 0 in GF(11)" in {
+    val a = PrimeField(11, 1)
+    val b = PrimeField(11, 0)
+
+    (a > b) should be (true)
   }
 }

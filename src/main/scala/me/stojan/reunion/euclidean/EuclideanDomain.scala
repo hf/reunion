@@ -17,9 +17,14 @@ trait Euclidean[V] {
   def +(e: Euclidean[V]): Euclidean[V]
 
   /**
+   * Additive inverse of this element.
+   */
+  def unary_-(): Euclidean[V]
+
+  /**
    * Subtraction with another element in the same domain.
    */
-  def -(e: Euclidean[V]): Euclidean[V]
+  def -(e: Euclidean[V]): Euclidean[V] = this + (-e)
 
   /**
    * Multiplication with another element in the same domain.
@@ -43,19 +48,34 @@ trait Euclidean[V] {
    * Whether this element is not the zero element.
    */
   def nonZero: Boolean = !isZero
-}
 
-/**
- * Holds implicits for convering `Euclidean`s to `Ring`s.
- */
-object EuclideanConversions {
-  private case class RingEuclidean[V](euclidean: Euclidean[V]) extends Ring[V] {
-    override def value: V = euclidean.value
-    override def unary_-(): Ring[V] = -euclidean
-    override def +(r: Ring[V]): Ring[V] = euclidean + r
-    override def -(r: Ring[V]): Ring[V] = euclidean - r
-    override def *(r: Ring[V]): Ring[V] = euclidean * r
-  }
+  /**
+   * Whether this element is the multiplicative identity element.
+   */
+  def isOne: Boolean
 
-  implicit def euclideanToRing[V](e: Euclidean[V]): Ring[V] = RingEuclidean[V](e)
+  /**
+   * Whether this element is not the multiplicative identity element.
+   */
+  def nonOne: Boolean = !isOne
+
+  /**
+   * Whether this element is greater than `e`.
+   */
+  def >(e: Euclidean[V]): Boolean
+
+  /**
+   * Whether this element is greater than or equal to `e`.
+   */
+  def >=(e: Euclidean[V]): Boolean = (this > e) || (this == e)
+
+  /**
+   * Whether this element is less than `e`.
+   */
+  def <(e: Euclidean[V]): Boolean
+
+  /**
+   * Whether this element is less than or equal to `e`.
+   */
+  def <=(e: Euclidean[V]): Boolean = (this < e) || (this == e)
 }
