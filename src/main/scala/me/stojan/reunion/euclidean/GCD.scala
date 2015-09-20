@@ -7,8 +7,16 @@ object ExtendedEuclidean {
   /**
    * Computes the Extended Euclidean Algorithm for the `a` and `b` Euclidean
    * domain elements.
+   *
+   * If a is greater than b, then the GCD of (b, a) will be computed so as to
+   * always return a consistent GCD value. This may have consequences when
+   * dealing with Bezout's coefficients.
    */
   def apply[V](a: Euclidean[V], b: Euclidean[V]): GCD[Euclidean[V]] = {
+    if (a > b) {
+      return apply(b, a)
+    }
+
     // ._1 is "new", ._2 is "old"
 
     var s = (a - a, a / a)
