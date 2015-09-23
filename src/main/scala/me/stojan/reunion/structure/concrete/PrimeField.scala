@@ -50,4 +50,6 @@ class PrimeField protected (val prime: BigInt, val value: BigInt) extends Field[
     case p: PrimeField => p.prime == prime && p.value == value
     case _ => false
   }
+
+  override def toString: String = "PrimeField(" + prime + ", " + value + ")"
 }
