@@ -17,9 +17,22 @@ object ExtendedEuclidean {
       return apply(b, a)
     }
 
+    if (b.isZero) {
+      throw new java.lang.IllegalArgumentException("GCD(a = " + a + ", b = " + b + ") is illegal since b is 'zero'");
+    }
+
+    if (a.isZero) {
+      val one = b / b
+
+      return GCD(input = (a, b), bezout = (a, one), gcd = b, quotients = (a, one))
+    }
+
+    val zero = if (a.isZero) { a } else { a - a }
+    val one = b / b
+
     // ._1 is "new", ._2 is "old"
 
-    var s = (a - a, a / a)
+    var s = (zero, one)
     var t = (s._2, s._1)
     var r = (b, a)
 
