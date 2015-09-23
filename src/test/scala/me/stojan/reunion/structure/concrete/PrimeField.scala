@@ -41,7 +41,7 @@ class PrimeFieldSpec extends ReunionSpec {
   }
 
   it should "throw an arithmetic exception when 1 / 0 in GF(11)" in {
-    an [java.lang.ArithmeticException] should be thrownBy {
+    an [java.lang.UnsupportedOperationException] should be thrownBy {
       val a = PrimeField(11, 1)
       val b = PrimeField(11, 0)
 

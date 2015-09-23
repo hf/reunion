@@ -32,7 +32,13 @@ class PrimeField protected (val prime: BigInt, val value: BigInt) extends Field[
    * Uses `ExtendedEuclidean` to calculate the multiplicative inverse, so this
    * is a slow operation.
    */
-  override def unary_~(): Field[BigInt] = (ExtendedEuclidean(value, prime).bezout._1 + prime) % prime
+  override def unary_~(): Field[BigInt] =
+    if (isZero) {
+      throw new java.lang.UnsupportedOperationException("Multiplicative inverse not defined for the zero element: " + this)
+    } else {
+      // value will always be <= prime, so bezout._1 + prime is the inverse
+      (ExtendedEuclidean(value, prime).bezout._1 + prime) % prime
+    }
 
   private implicit def bigIntToField(i: BigInt): Field[BigInt] = PrimeField(prime, i)
   private implicit def bigIntToEuclidean(i: BigInt): Euclidean[BigInt] = BigIntEuclidean(i)
