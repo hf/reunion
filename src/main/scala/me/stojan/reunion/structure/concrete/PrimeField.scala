@@ -1,6 +1,6 @@
 package me.stojan.reunion.structure.concrete
 
-import me.stojan.reunion.structure.Field
+import me.stojan.reunion.structure.{ Field, FieldDescriptor }
 
 import me.stojan.reunion.euclidean.{ Euclidean, ExtendedEuclidean }
 import me.stojan.reunion.euclidean.concrete.BigIntEuclidean
@@ -12,12 +12,21 @@ object PrimeField {
   def apply(prime: BigInt, value: BigInt): PrimeField = new PrimeField(prime, value % prime)
 }
 
+private case class PrimeFieldDescriptor(prime: BigInt) extends FieldDescriptor[BigInt] {
+  override lazy val one: Field[BigInt] = obtain(1)
+  override lazy val zero: Field[BigInt] = obtain(0)
+
+  override def obtain(value: BigInt): Field[BigInt] = PrimeField(prime, value)
+}
+
 /**
  * A prime finite field.
  *
  * Construction should be done such that `value < prime`.
  */
 class PrimeField protected (val prime: BigInt, val value: BigInt) extends Field[BigInt] {
+  override lazy val descriptor: FieldDescriptor[BigInt] = PrimeFieldDescriptor(prime)
+
   override val isZero: Boolean = value == 0
   override val isOne:  Boolean = value == 1
 

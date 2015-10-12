@@ -8,9 +8,64 @@ trait Element[V] {
 }
 
 /**
+ * Describes the structure to which an element belongs.
+ */
+trait Descriptor[V, E <: Element[V]] {
+  /**
+   * Obtain a structured element from the internal type.
+   */
+  def obtain(value: V): E
+}
+
+/**
+ * Describes a group.
+ */
+trait GroupDescriptor[V] extends Descriptor[V, Group[V]] {
+  /**
+   * Identity element of the group.
+   */
+  def identity: Group[V]
+}
+
+/**
+ * Describes a ring.
+ */
+trait RingDescriptor[V] extends Descriptor[V, Ring[V]] {
+  /**
+   * Additive identity element.
+   */
+  def zero: Ring[V]
+
+  /**
+   * Multiplicative identity element.
+   */
+  def one: Ring[V]
+}
+
+/**
+ * Describes a field.
+ */
+trait FieldDescriptor[V] extends Descriptor[V, Field[V]] {
+  /**
+   * Additive identity element.
+   */
+  def zero: Field[V]
+
+  /**
+   * Multiplicative identity element.
+   */
+  def one: Field[V]
+}
+
+/**
  * A generic Abelian Group element.
  */
 trait Group[V] extends Element[V] {
+  /**
+   * This group's descriptor.
+   */
+  def descriptor: GroupDescriptor[V]
+
   /**
    * Whether this is the identity element.
    */
@@ -62,6 +117,11 @@ trait Group[V] extends Element[V] {
  * A generic Ring element.
  */
 trait Ring[V] extends Element[V] {
+  /**
+   * This ring's descriptor.
+   */
+  def descriptor: RingDescriptor[V]
+
   /**
    * Whether this is the additive identity element.
    */
@@ -126,6 +186,11 @@ trait Ring[V] extends Element[V] {
  * Elements are assumed to have partial ordering.
  */
 trait Field[V] extends Element[V] {
+  /**
+   * This field's descriptor.
+   */
+  def descriptor: FieldDescriptor[V]
+
   /**
    * Whether this is the additive identity element.
    */
@@ -194,7 +259,14 @@ trait Field[V] extends Element[V] {
 }
 
 object Group {
+  private case class RAdditiveGroupDescriptor[V](ringDescriptor: RingDescriptor[V]) extends GroupDescriptor[Ring[V]] {
+    override lazy val identity: Group[Ring[V]] = RAdditiveGroup(ringDescriptor.zero)
+    override def obtain(value: Ring[V]): Group[Ring[V]] = RAdditiveGroup(value)
+  }
+
   private case class RAdditiveGroup[V](value: Ring[V]) extends Group[Ring[V]] {
+    override val descriptor: GroupDescriptor[Ring[V]] = RAdditiveGroupDescriptor(value.descriptor)
+
     override def isIdentity: Boolean = value.isZero
     override def +(g: Group[Ring[V]]): Group[Ring[V]] = value + g.value
     override def unary_-(): Group[Ring[V]] = -value
@@ -208,7 +280,14 @@ object Group {
     private implicit def ringToGroup(r: Ring[V]): Group[Ring[V]] = RAdditiveGroup(r)
   }
 
+  private case class FAdditiveGroupDescriptor[V](fieldDescriptor: FieldDescriptor[V]) extends GroupDescriptor[Field[V]] {
+    override lazy val identity: Group[Field[V]] = obtain(fieldDescriptor.zero)
+    override def obtain(value: Field[V]): Group[Field[V]] = FAdditiveGroup(value)
+  }
+
   private case class FAdditiveGroup[V](value: Field[V]) extends Group[Field[V]] {
+    override val descriptor: GroupDescriptor[Field[V]] = FAdditiveGroupDescriptor(value.descriptor)
+
     override def isIdentity: Boolean = value.isZero
     override def +(f: Group[Field[V]]): Group[Field[V]] = value + f.value
     override def unary_-(): Group[Field[V]] = -value
@@ -227,7 +306,16 @@ object Group {
 }
 
 object Ring {
+  private case class FRingDescriptor[V](fieldDescriptor: FieldDescriptor[V]) extends RingDescriptor[Field[V]] {
+    override lazy val zero: Ring[Field[V]] = obtain(fieldDescriptor.zero)
+    override lazy val one: Ring[Field[V]] = obtain(fieldDescriptor.one)
+
+    override def obtain(value: Field[V]): Ring[Field[V]] = FRing(value)
+  }
+
   private case class FRing[V](value: Field[V]) extends Ring[Field[V]] {
+    override val descriptor: RingDescriptor[Field[V]] = FRingDescriptor(value.descriptor)
+
     override def isZero: Boolean = value.isZero
     override def isOne: Boolean = value.isOne
     override def +(r: Ring[Field[V]]): Ring[Field[V]] = value + r.value
