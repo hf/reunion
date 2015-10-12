@@ -17,14 +17,14 @@ Published on Sonatype:
 <dependency>
   <groupId>me.stojan</groupId>
   <artifactId>reunion_2.11</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
 ... or in SBT:
 
 ```scala
-libraryDependencies += "me.stojan" %% "reunion" % "0.0.1-SNAPSHOT"
+libraryDependencies += "me.stojan" %% "reunion" % "0.0.2-SNAPSHOT"
 ```
 
 ## License
