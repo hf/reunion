@@ -81,4 +81,27 @@ class PrimeFieldSpec extends ReunionSpec {
 
     (a > b) should be (true)
   }
+
+  it should "have a descriptor bound to the prime" in {
+    val a = PrimeField(11, 1)
+    val b = PrimeField(11, 3)
+    val c = PrimeField(7, 2)
+
+    (a.descriptor) should be (b.descriptor)
+    (b.descriptor) should be (a.descriptor)
+    (c.descriptor) should not be (a.descriptor)
+    (c.descriptor) should not be (b.descriptor)
+  }
+
+  it should "have a descriptor that returns the proper 0" in {
+    val a = PrimeField(11, 3)
+
+    (a.descriptor.zero) should be (PrimeField(11, 0))
+  }
+
+  it should "have a descriptor that returns the proper 1" in {
+    val a = PrimeField(11, 6)
+
+    (a.descriptor.one) should be (PrimeField(11, 1))
+  }
 }

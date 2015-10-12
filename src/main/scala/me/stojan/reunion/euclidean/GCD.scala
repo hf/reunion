@@ -13,22 +13,25 @@ object ExtendedEuclidean {
    * dealing with Bezout's coefficients.
    */
   def apply[V](a: Euclidean[V], b: Euclidean[V]): GCD[Euclidean[V]] = {
+    if (a.descriptor != b.descriptor) {
+      throw new java.lang.IllegalArgumentException("a, b do not belong to the same euclidean domain")
+    }
+
+    val descriptor = a.descriptor
+
     if (a > b) {
       return apply(b, a)
     }
 
     if (b.isZero) {
-      throw new java.lang.IllegalArgumentException("GCD(a = " + a + ", b = " + b + ") is illegal since b is 'zero'");
+      val one = descriptor.one
+      val zero = descriptor.zero
+
+      return GCD(input = (a, b), bezout = (zero, zero), gcd = zero, quotients = (zero, zero))
     }
 
-    if (a.isZero) {
-      val one = b / b
-
-      return GCD(input = (a, b), bezout = (a, one), gcd = b, quotients = (a, one))
-    }
-
-    val zero = if (a.isZero) { a } else { a - a }
-    val one = b / b
+    val zero = descriptor.zero
+    val one = descriptor.one
 
     // ._1 is "new", ._2 is "old"
 

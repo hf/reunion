@@ -3,9 +3,34 @@ package me.stojan.reunion.euclidean
 import me.stojan.reunion.structure.Ring
 
 /**
+ * Describes a euclidean domain.
+ */
+trait EuclideanDescriptor[V] {
+  /**
+   * Converts a primitive value to a euclidean domain element with this domain.
+   */
+  def obtain(value: V): Euclidean[V]
+
+  /**
+   * Multiplicative identity element.
+   */
+  def one: Euclidean[V]
+
+  /**
+   * Additive identity element.
+   */
+  def zero: Euclidean[V]
+}
+
+/**
  * A generic Euclidean domain element.
  */
 trait Euclidean[V] {
+  /**
+   * This element's descriptor.
+   */
+  def descriptor: EuclideanDescriptor[V]
+
   /**
    * Backing value of this element.
    */
