@@ -5,18 +5,11 @@ import me.stojan.reunion.structure.{ Field, FieldDescriptor }
 import me.stojan.reunion.euclidean.{ Euclidean, ExtendedEuclidean }
 import me.stojan.reunion.euclidean.concrete.BigIntEuclidean
 
-object PrimeField {
-  /**
-   * Creates a new element in the finite field GF(prime).
-   */
-  def apply(prime: BigInt, value: BigInt): PrimeField = new PrimeField(prime, value % prime)
-}
-
 private case class PrimeFieldDescriptor(prime: BigInt) extends FieldDescriptor[BigInt] {
   override lazy val one: Field[BigInt] = obtain(1)
   override lazy val zero: Field[BigInt] = obtain(0)
 
-  override def obtain(value: BigInt): Field[BigInt] = PrimeField(prime, value)
+  override def obtain(value: BigInt): Field[BigInt] = PrimeField(this, value % prime)
 }
 
 /**
@@ -24,18 +17,18 @@ private case class PrimeFieldDescriptor(prime: BigInt) extends FieldDescriptor[B
  *
  * Construction should be done such that `value < prime`.
  */
-class PrimeField protected (val prime: BigInt, val value: BigInt) extends Field[BigInt] {
-  override lazy val descriptor: FieldDescriptor[BigInt] = PrimeFieldDescriptor(prime)
-
+case class PrimeField(descriptor: FieldDescriptor[BigInt], val value: BigInt) extends Field[BigInt] {
   override val isZero: Boolean = value == 0
   override val isOne:  Boolean = value == 1
 
-  override def +(f: Field[BigInt]): Field[BigInt] = (value + f.value) % prime
-  override def *(f: Field[BigInt]): Field[BigInt] = (value * f.value) % prime
-  override def unary_-(): Field[BigInt] = (prime - value)
+  override def +(f: Field[BigInt]): Field[BigInt] = descriptor.obtain(value + f.value)
+  override def *(f: Field[BigInt]): Field[BigInt] = descriptor.obtain(value * f.value)
+  override def unary_-(): Field[BigInt] = descriptor.obtain(prime - value)
 
   override def >(f: Field[BigInt]): Boolean = value > f.value
   override def <(f: Field[BigInt]): Boolean = value < f.value
+
+  private val prime: BigInt = descriptor.asInstanceOf[PrimeFieldDescriptor].prime
 
   /**
    * Uses `ExtendedEuclidean` to calculate the multiplicative inverse, so this
@@ -49,16 +42,14 @@ class PrimeField protected (val prime: BigInt, val value: BigInt) extends Field[
       (ExtendedEuclidean(value, prime).bezout._1 + prime) % prime
     }
 
-  private implicit def bigIntToField(i: BigInt): Field[BigInt] = PrimeField(prime, i)
+  private implicit def bigIntToField(i: BigInt): Field[BigInt] = descriptor.obtain(i)
   private implicit def bigIntToEuclidean(i: BigInt): Euclidean[BigInt] = BigIntEuclidean(i)
   private implicit def euclideanToBigInt(e: Euclidean[BigInt]): BigInt = e.value
+}
 
-  override def hashCode: Int = prime.hashCode ^ value.hashCode
+object PrimeField {
 
-  override def equals(a: Any): Boolean = a match {
-    case p: PrimeField => p.prime == prime && p.value == value
-    case _ => false
-  }
+  def descriptor(prime: BigInt): FieldDescriptor[BigInt] = PrimeFieldDescriptor(prime)
 
-  override def toString: String = "PrimeField(" + prime + ", " + value + ")"
+  def apply(value: BigInt)(implicit primeFieldDescriptor: FieldDescriptor[BigInt]): Field[BigInt] = primeFieldDescriptor.obtain(value)
 }

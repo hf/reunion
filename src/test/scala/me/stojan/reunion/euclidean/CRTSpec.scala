@@ -18,4 +18,16 @@ class CRTSpec extends ReunionSpec {
 
     solution should be (11)
   }
+
+  it should "throw IllegalArgumentException for a 0 divisor" in {
+    val congruences = List((BigIntEuclidean(1), BigIntEuclidean(1)),
+      (BigIntEuclidean(1), BigIntEuclidean(0)))
+    
+    (BigIntEuclidean(0).isZero) should be (true)
+
+    an [java.lang.IllegalArgumentException] should be thrownBy {
+      ChineseRemainder(congruences)
+    }
+  }
+  
 }
