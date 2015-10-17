@@ -14,11 +14,17 @@ object ChineseRemainder {
    * It returns a solution to the variable X. All other solutions are congruent
    * to the LCM of the divisors.
    *
-   * A requirement for this algorithm is that the divisors be pairwise coprime.
+   * A requirement for this algorithm is that the divisors be pairwise coprime and not zero.
    */
   def apply[V](congruences: Seq[(Euclidean[V], Euclidean[V])]): Euclidean[V] = {
     val remainders = congruences.map(_._1)
     val divisors = congruences.map(_._2)
+    
+    divisors.zipWithIndex.foreach { t => 
+      if (t._1.isZero) { 
+        throw new java.lang.IllegalArgumentException("Divisor ${t._2} (${t._1}) is zero") 
+      } 
+    }
 
     val N = divisors.tail.fold(divisors.head) { (a, i) => a * i }
 

@@ -8,9 +8,8 @@ object ExtendedEuclidean {
    * Computes the Extended Euclidean Algorithm for the `a` and `b` Euclidean
    * domain elements.
    *
-   * If a is greater than b, then the GCD of (b, a) will be computed so as to
-   * always return a consistent GCD value. This may have consequences when
-   * dealing with Bezout's coefficients.
+   * If `a` is less than `b` then the GCD of (b, a) will be computed, but it will return values as if
+   * (a, b) was computed. This is done to have consistent (and not non-negative) GCD values.
    */
   def apply[V](a: Euclidean[V], b: Euclidean[V]): GCD[Euclidean[V]] = {
     if (a.descriptor != b.descriptor) {
@@ -24,7 +23,6 @@ object ExtendedEuclidean {
     }
 
     if (b.isZero) {
-      val one = descriptor.one
       val zero = descriptor.zero
 
       return GCD(input = (a, b), bezout = (zero, zero), gcd = zero, quotients = (zero, zero))

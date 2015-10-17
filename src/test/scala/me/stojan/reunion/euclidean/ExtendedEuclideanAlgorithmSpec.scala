@@ -71,4 +71,12 @@ class ExtendedEuclideanAlgorithmSpec extends ReunionSpec {
 
     (gcdA) should be (gcdB)
   }
+
+  it should "compute GCD(6, 3) as if it were GCD(3, 6)" in {
+    val gcdA = ExtendedEuclidean(BigIntEuclidean(6), BigIntEuclidean(3))
+    val gcdB = ExtendedEuclidean(BigIntEuclidean(3), BigIntEuclidean(6))
+    
+    (gcdA) should be (gcdB)
+  }
 }
+
